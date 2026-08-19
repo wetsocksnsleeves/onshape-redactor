@@ -1,4 +1,4 @@
-# OnShape Incognito
+# OnShape Redactor
 
 A Chrome (MV3) extension that finds document-list filenames on OnShape and
 replaces them with their base64-decoded value, only when the page URL ends
