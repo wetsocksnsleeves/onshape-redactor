@@ -23,8 +23,11 @@ We obfuscate the project name such that there is no semantic match during search
 
 ## Usage
 
-Navigate to an OnShape document list whose URL contains
-`resourceType=resourceuserowner`. Filename spans matching the pattern above
-will be decoded in place. Debug logging appears in the page console.
+|Encoded|Decoded|
+|---|---|
+|<img width="432" height="196" alt="image" src="https://github.com/user-attachments/assets/6b2be9ea-1383-4348-85f9-e4efd7307ec2" />|<img width="491" height="199" alt="image" src="https://github.com/user-attachments/assets/d74522d4-1d10-44c3-8a81-33c0237277ab" />|
 
-New documents created whilst the extension is live is automatically encoded.
+
+1. Navigate to an OnShape document list. Filename will be decoded in place.
+2. New documents created whilst the extension is on will have their names automatically encoded.
+3. If a given document isn't encoded, clicking the "Rename" button will update it
