@@ -3,6 +3,15 @@
   "name": "OnShape Redactor",
   "version": "1.0",
   "description": "Decodes base64 document-list filenames on OnShape when the URL ends in =resourceuserowner.",
+  "permissions": ["activeTab", "webRequest"],
+  "host_permissions": ["*://cad.onshape.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "OnShape Redactor"
+  },
   "content_scripts": [
     {
       "matches": ["*://*.onshape.com/*"],

@@ -66,6 +66,14 @@ if (document.body) {
 window.addEventListener("popstate", scan);
 window.addEventListener("hashchange", scan);
 document.addEventListener("submit", handleCreateSubmit, true);
+if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message && message.type === "rename") {
+      handleRenameRequest();
+      sendResponse({ ok: true });
+    }
+  });
+}
 
 decodeDocumentTitle();
 scan();
