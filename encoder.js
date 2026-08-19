@@ -10,7 +10,7 @@ function encodeBase64(str) {
 }
 
 function isAlreadyEncoded(value) {
-  return /^[A-Za-z0-9+/=]+$/.test(value);
+  return isValidBase64(value);
 }
 
 function getDocumentId() {
@@ -35,6 +35,26 @@ function handleCreateSubmit(event) {
   input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
+function getXsrfToken() {
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+async function getTokenWithFallback() {
+  const cookieToken = getXsrfToken();
+  if (cookieToken) {
+    return cookieToken;
+  }
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: "get-xsrf-token",
+    });
+    return response && response.token;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function handleRenameRequest() {
   if (!location.href.startsWith(DOCUMENT_EDITOR_URL_PREFIX)) {
     return;
@@ -49,15 +69,7 @@ async function handleRenameRequest() {
     return;
   }
   const name = isAlreadyEncoded(title) ? title : encodeBase64(title);
-  let token = null;
-  try {
-    const response = await chrome.runtime.sendMessage({
-      type: "get-xsrf-token",
-    });
-    token = response && response.token;
-  } catch (e) {
-    token = null;
-  }
+  const token = await getTokenWithFallback();
   if (!token) {
     return;
   }

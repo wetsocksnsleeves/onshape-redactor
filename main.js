@@ -45,11 +45,24 @@ function decodeDocumentTitle() {
   }
 }
 
+function decodePageTitle() {
+  const title = document.title;
+  const idx = title.indexOf("|");
+  const namePart = idx === -1 ? title : title.slice(0, idx).trim();
+  const decoded = decodeBase64(namePart);
+  if (decoded === null || decoded === namePart) {
+    return;
+  }
+  const rest = idx === -1 ? "" : title.slice(idx);
+  document.title = `${decoded} ${rest}`.trim();
+}
+
 let debounceTimer = null;
 function scheduleScan() {
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
     decodeDocumentTitle();
+    decodePageTitle();
     scan();
   }, 100);
 }
@@ -71,9 +84,27 @@ if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage)
     if (message && message.type === "rename") {
       handleRenameRequest();
       sendResponse({ ok: true });
+    } else if (message && message.type === "get-rename-status") {
+      sendResponse({ canRename: canRename() });
     }
   });
 }
 
+function canRename() {
+  if (!location.href.startsWith(DOCUMENT_EDITOR_URL_PREFIX)) {
+    return false;
+  }
+  const titleEl = document.querySelector(DOCUMENT_TITLE_SELECTOR);
+  if (!titleEl) {
+    return false;
+  }
+  const title = titleEl.textContent.trim();
+  if (!title) {
+    return false;
+  }
+  return !isValidBase64(title);
+}
+
 decodeDocumentTitle();
+decodePageTitle();
 scan();

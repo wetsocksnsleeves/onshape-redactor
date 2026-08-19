@@ -9,7 +9,18 @@ function setEnabled(enabled) {
 async function init() {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   const isEditor = !!(tab && tab.url && tab.url.startsWith(DOCUMENT_EDITOR_URL_PREFIX));
-  setEnabled(isEditor);
+  if (!isEditor || !tab.id) {
+    setEnabled(false);
+    return;
+  }
+  try {
+    const response = await chrome.tabs.sendMessage(tab.id, {
+      type: "get-rename-status",
+    });
+    setEnabled(!!(response && response.canRename));
+  } catch (e) {
+    setEnabled(false);
+  }
 }
 
 button.addEventListener("click", async () => {
