@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "OnShape Redactor",
+  "version": "1.0",
+  "description": "Decodes base64 document-list filenames on OnShape when the URL ends in =resourceuserowner.",
+  "content_scripts": [
+    {
+      "matches": ["*://*.onshape.com/*"],
+      "js": ["decoder.js", "encoder.js", "main.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
